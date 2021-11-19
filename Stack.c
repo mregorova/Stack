@@ -5,26 +5,34 @@
 
 #define NMAX 100                       //max number of elements
 
-struct stack {                        //stack declaration
+struct stack {                          //stack declaration
     float elem[NMAX];                   //array for keeping elements
     int top;                            //index of element on the top of stack
 
     size_t size;
     size_t cap;
     int* Data;
+};
+
+size_t Ctr(struct stack* stk, size_t cap) {
+
+    if (cap < 0) {
+        stk->error = -1;              // TODO: error
+    }
+
+    if (cap == 0) {
+        stk->Data = NULL;
+        stk->size = 0;
+        stk->cap = 0;
+    }                                 // Do we need actions for (cap > 0)?
+
+    return 0;
 }
 
-struct Ctr(a) {
-
-    Data = NULL;
-    size = 0;
-    cap = 0;
-}
-
-struct Dtr(a) {
-    Data = NULL;
-    size = -123;
-    cap = -321;
+void Dtr(struct stack* stk) {
+    stk->Data = NULL;
+    stk->size = -123;
+    stk->cap = -321;
 }
 
 
@@ -40,7 +48,7 @@ void push(struct stack *stk, float f) {      //adding an element to stack
         stk -> top++;
 
     } else
-        printf("Stack is fuul, number of elements: %d !\n", stk->top);
+        printf("Stack is full, number of elements: %d !\n", stk->top);
 }
 
 float pop(struct stack *stk) {         //delete an element from stack
@@ -90,17 +98,55 @@ void stkPrint(struct stack *stk) {    //printing elements of stack
   } while(i > 0);
 }
 
-void StkMemInc(struct Stack* stk, int cap) {
+size_t StkMem(struct stack* stk, size_t StartSize) {
 
-    if (stk->size == stk->cap-1)         
-        cap *= 2;
+    stk->cap = StartSize;
+    stk->Data = (data_t*) calloc( (stk->cap + 2), sizeof(data_t));
+
+    if (stk->Data == NULL) {
+        printf("%s", "Error! No data in stack ((\n");
+        return -2;
+    }
+
+    return 0;
 }
 
-void StkMemDec(struct Stack* stk, int cap) {
+size_t StkMemInc(struct stack* stk) {
+
+    if (stk->cap == 0) 
+        stk->cap = 2;
+    else
+        stk->cap *= 2;
+
+    if (stk->Data) 
+        stk->Data = (data_t*) realloc(stk->Data, (stk->cap + 2) * sizeof(data_t));   
+    else
+        stk->Data = (data_t*) calloc((nameStack->Capacity + 2), sizeof(data_t));    
+
+    if (stk->Data == NULL) {
+        printf("%s", "Error! No data in stack ((\n");
+        return -2;
+    }
+
+    stk->size = stk->cap;                          // Have no idea how to write this string clear
+
+    return 0;
+}
+
+size_t StkMemDec(struct stack* stk) {
     
     if (stk->size < stk->cap / 4)
         stk->cap /= 4;
-}                                                //how to use realloc?
+
+    stk->Data = (data_t*) realloc(stk->Data, (stk->cap + 2) * sizeof(data_t));  
+
+    if (stk->Data == NULL) {
+        printf("%s", "Error! No data in stack ((\n");
+        return -2;
+    }
+
+    return 0;
+}                                  
 
 int main() {
     //struct Stack stk = {}; 
@@ -125,21 +171,16 @@ int main() {
     stkPrint(stk);
     printf("Top element is %f\n", stkTop(stk));
 
-    do {
-        printf("Extracting an element %f, ", pop(stk));
-        printf("There are %d elements left in stack\n", getcount(stk));
-    } while (isempty(stk) == 0);
-
     getchar(); getchar();
 
-    return 0;    
-
-    if (cap >= 0 && size >= 0) {
+    if (stk->cap >= 0 && stk->size >= 0) {
     
-        StackCtor(&stk);
+        Ctr(&stk);
 
-        StackPush(&stk, 10);
+        push(&stk, 10);
 
-        StackDtor(&stk);
+        Dtr(&stk);
     }
+
+    return 0;    
 }
