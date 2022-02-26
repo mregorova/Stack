@@ -5,18 +5,27 @@
 
 #define NMAX 100                       //max number of elements
 
+typedef int data_t;
+
+enum STACK_ERRORS {                    //errors declaration
+
+    STACK_ERROR_PUSH = 123,
+    STACK_ERROR_POP = 456,
+    STACK_ERROR_CTOR = -1,
+};
+
 struct stack {                          //stack declaration
     float elem[NMAX];                   //array for keeping elements
 
     size_t size;
     size_t cap;
-    int* Data;
+    data_t* Data;
 };
 
 size_t Ctr(struct stack* stk, size_t cap) {
 
     if (cap < 0) {
-        stk->error = -1;              // TODO: error
+        return STACK_ERROR_CTOR;
     }
 
     if (cap == 0) {
@@ -41,7 +50,7 @@ void Dtr(struct stack* stk) {
     stk->cap = -321;
 }
 
-void push(struct stack *stk, float f) {      //adding an element to stack
+size_t push(struct stack *stk, float f) {      //adding an element to stack
   
     if (stk->cap == stk->size) {
         StkMemInc(stk);
@@ -50,7 +59,7 @@ void push(struct stack *stk, float f) {      //adding an element to stack
     stk->Data[++stk->size] = f;
 }
 
-float pop(struct stack *stk) {         //delete an element from stack
+data_t pop(struct stack *stk) {         //delete an element from stack
   
     if (isempty(stk)) {
         printf("Atata! Nothing here");
