@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define NMAX 100                       //max number of elements
-
 typedef int data_t;
 
 enum STACK_ERRORS {                    //errors declaration
@@ -16,8 +14,6 @@ enum STACK_ERRORS {                    //errors declaration
 
 struct stack {                          //stack declaration
     ptrStk = nullptr;
-
-    float elem[NMAX];                   //array for keeping elements
 
     size_t size;
     size_t cap;
@@ -31,7 +27,7 @@ struct stack {                          //stack declaration
 
 size_t Ctr(struct stack* stk, size_t cap) {
 
-    stk->ptrStk = calloc(stk->NMAX, sizeof(stk->NMAX) + 2 * sizeof(int)); // +2 for canary
+    stk->ptrStk = calloc(stk->cap, sizeof(stk->cap) + 2 * sizeof(int)); // +2 for canary
 
     *(((int*)stk->ptrStk) + 0) = CANARY_LEFT;
 
@@ -52,12 +48,14 @@ size_t Ctr(struct stack* stk, size_t cap) {
         StkMem(stk, cap);
     }
 
-    *(((int*)stk->ptrStk) + stk->NMAX) = CANARY_RIGHT;
+    *(((int*)stk->ptrStk) + stk->cap) = CANARY_RIGHT;
 
     return 0;
 }
 
 void Dtr(struct stack* stk) {
+    free (stk->Data);                           //cleaning Data (what is the difference between free and StackMem?)
+
     stk->Data = NULL;
     stk->size = -123;
     stk->cap = -321;
@@ -69,13 +67,13 @@ size_t push(struct stack *stk, float f) {      //adding an element to stack
         StkMemInc(stk);
     }
 
-    stk->Data[++stk->size] = f;
+    stk->Data[stk->size++] = f;
 }
 
-data_t pop(struct stack *stk) {         //delete an element from stack
+data_t pop(struct stack *stk) {                //delete an element from stack
   
-    if (isempty(stk)) {
-        printf("Atata! Nothing here");
+    if (stk->size == 0) {
+        printf("Atata! Nothing here\n");
     }
 
     else
@@ -92,39 +90,16 @@ void dump(const stack *stk) {
     if error mmmmm
 }
 
-int isempty(struct stack *stk) {      //is stack empty?
-  
-  if (stk->size == 0)    return 1;
-  else return 0;
-}
-
-int getcount(struct stack *stk) {     //receiving the number of elements in stack
-  return stk->size;
-}
-
 void stkPrint(struct stack *stk) {    //printing elements of stack
   
   int i;
   i = stk->size; // i - number of elements in stack
 
-  if (isempty(stk) == 1) return;
+  if (if (stk->size == 0) return;
   do {
     i--;
     printf("%f\n", stk->elem[i]);
   } while(i > 0);
-}
-
-size_t StkMem(struct stack* stk, size_t StartSize) {
-
-    stk->cap = StartSize;
-    stk->Data = (data_t*) calloc( (stk->cap + 2), sizeof(data_t));
-
-    if (stk->Data == NULL) {
-        printf("%s", "Error! No data in stack ((\n");
-        return -2;
-    }
-
-    return 0;
 }
 
 size_t StkMemInc(struct stack* stk) {
@@ -185,7 +160,7 @@ int StkIsOk(struct Stack *stk) {
             return arrayLeftCanary;
         }
 
-        if (*((int*)stk->ptrStk + stk->NMAX) != CANARY_RIGHT) {
+        if (*((int*)stk->ptrStk + stk->cap) != CANARY_RIGHT) {
             return arrayRightCanary;
         }
 
@@ -195,7 +170,7 @@ int StkIsOk(struct Stack *stk) {
 
 void Stack_dump(FILE* file, struct Stack* stk) {
 
-    isempty(stk);
+    if (stk->size == 0) return 1;
 
     const char* code = Stk_ERROR(stk);
 
@@ -247,7 +222,7 @@ int main() {
         push(stk, elem);
     }
 
-    printf("There are %d elements in stack\n\n", getcount(stk));
+    printf("There are %d elements in stack\n\n", stk->size);
     stkPrint(stk);
 
     getchar(); getchar();
